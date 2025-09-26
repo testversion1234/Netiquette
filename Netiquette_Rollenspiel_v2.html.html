@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netiquette-Rollenspiel v2 – Mehr Levels</title>
+<style>
+  :root{
+    --bg:#f6f7fb;--card:#ffffff;--ink:#1f2937;--muted:#6b7280;
+    --accent:#2563eb;--ok:#10b981;--warn:#ef4444;--bubble:#eef2ff;
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5}
+  header{padding:16px 20px;background:linear-gradient(90deg,#4f46e5,#2563eb);color:white}
+  header h1{margin:0;font-size:1.1rem}
+  main{max-width:900px;margin:16px auto;padding:0 12px 24px}
+  .wrap{display:grid;gap:16px;grid-template-columns:1fr}
+  .card{background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.06);padding:16px}
+  .row{display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+  .bot,.you{max-width:80%;padding:10px 12px;border-radius:12px}
+  .bot{background:var(--bubble);border-top-left-radius:0}
+  .you{background:#e5fff4;border-top-right-radius:0}
+  .muted{color:var(--muted);font-size:.92rem}
+  .btn{cursor:pointer;border:0;border-radius:10px;padding:10px 12px;background:var(--accent);color:#fff}
+  .btn.alt{background:#111827}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .score{font-weight:700}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:.8rem;margin-right:6px}
+  .good{color:var(--ok)} .bad{color:var(--warn)}
+  details{margin-top:6px}
+  input[type="text"]{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:10px}
+  .small{font-size:.88rem}
+  .footer-note{font-size:.82rem;color:#6b7280;margin-top:6px}
+  .pill{display:inline-flex;gap:6px;align-items:center;background:#111827;color:#fff;border-radius:999px;padding:6px 10px;font-size:.8rem}
+  .pill .dot{width:8px;height:8px;border-radius:999px;background:#10b981}
+  .hidden{display:none}
+  .title{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .levels{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .lvl{padding:2px 8px;border:1px solid #d1d5db;border-radius:999px;font-size:.78rem}
+  .lvl.on{border-color:#2563eb;background:#eff6ff}
+  .summary-box{background:#f9fafb;border:1px dashed #e5e7eb;border-radius:12px;padding:12px;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Netiquette-Rollenspiel v2 · Klassenchat (5.–7. Klasse)</h1>
+</header>
+<main>
+  <div class="wrap">
+
+    <section class="card">
+      <div class="title">
+        <div>
+          <div class="pill"><span class="dot"></span> Offline · DSGVO-freundlich (keine Cloud)</div>
+          <div class="muted small">Mehr Levels: Missverständnis · Ironie · BRÜLLEN (ALL CAPS) · Emoji-Übertreibung · Deeskalation</div>
+          <div class="levels" id="levelTags">
+            <span class="lvl" data-lvl="1">Level 1</span>
+            <span class="lvl" data-lvl="2">Level 2</span>
+            <span class="lvl" data-lvl="3">Level 3</span>
+            <span class="lvl" data-lvl="4">Level 4</span>
+            <span class="lvl" data-lvl="5">Level 5</span>
+          </div>
+        </div>
+        <button id="reset" class="btn ghost">Neu starten</button>
+      </div>
+    </section>
+
+    <section class="card" id="game">
+      <div id="chat"></div>
+      <div id="choices" class="btn-row"></div>
+      <div id="freeInput" class="hidden">
+        <div class="muted small">Schreibe eine höfliche Antwort (keine ALL CAPS/!!!, Emojis sparsam):</div>
+        <input type="text" id="userText" placeholder="z. B. Kannst du sagen, welcher Teil unklar war? Dann verbessere ich ihn. 🙂">
+        <div class="btn-row">
+          <button class="btn" id="send">Senden</button>
+          <button class="btn alt" id="suggest">Vorschläge</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div><span class="tag">Punkte</span> <span class="score" id="score">0</span></div>
+      <div class="muted small">+1: Ich-Botschaft / Nachfragen · +1: Deeskalation · −1: DU-Unterstellung / ALL CAPS / !!! oder Emoji-Flut</div>
+      <details>
+        <summary>Lehrer-Notizen / Auswertung</summary>
+        <ul class="small">
+          <li><b>Ich-Botschaft</b>: Wahrnehmung – Wirkung – Wunsch.</li>
+          <li><b>Nachfragen</b>: „Was genau?“ statt Unterstellen.</li>
+          <li><b>Ton</b>: Keine ALL CAPS (BRÜLLEN), Emojis sparsam, keine !!!-Fluten.</li>
+          <li><b>Netiquette</b>: Höflich bleiben, keine Klarnamen/Bloßstellung.</li>
+        </ul>
+      </details>
+      <div class="summary-box small" id="summary"></div>
+      <div class="footer-note">Zur Anpassung: Im Quelltext <code>SCENES</code>/Funktion <code>analyzeMessage()</code> ändern.</div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+// -------- Szenen (erweitert) --------
+const SCENES = [
+  // Level 1 – Missverständnis
+  {
+    id: "s1",
+    lvl: 1,
+    bot: 'Paul schreibt: „Hä? Deine Aufgabe ist doch voll falsch! 🙄“',
+    choices: [
+      { text: "Sachlich reagieren (Ich-Botschaft + Nachfragen)", delta: +1, next: "s1a", tip: "Ich-Botschaft, Deeskalation" },
+      { text: "Zurückschießen („DU hast keine Ahnung!!“)", delta: -1, next: "s1b", tip: "DU-Unterstellung" }
+    ]
+  },
+  { id: "s1a", lvl: 1,
+    bot: 'Du antwortest höflich. Paul: „Okay, sorry. Die 2. Aufgabe war anders gemeint.“',
+    choices: [ { text: "Weiter zu Ironie erkennen (Level 2)", delta: 0, next: "s2" } ]
+  },
+  { id: "s1b", lvl: 1,
+    bot: 'Paul: „Boah, chill mal…“ (Ton kippt)',
+    choices: [
+      { text: "Nochmal höflich versuchen", delta: +1, next: "s1a" },
+      { text: "Trotzdem weiter", delta: 0, next: "s2" }
+    ]
+  },
+
+  // Level 2 – Ironie
+  {
+    id: "s2",
+    lvl: 2,
+    bot: 'Mia schreibt: „Na klar, du bist ja der Mathe-King 😏“ – Ironie?',
+    choices: [
+      { text: "Ja → freundlich klären", delta: +1, next: "s2a" },
+      { text: "Nein → zurückzicken", delta: 0, next: "s2b" }
+    ]
+  },
+  { id: "s2a", lvl: 2,
+    bot: 'Du: „Meinst du das ironisch? Wenn ja, lass uns sachlich bleiben 🙂“ – Mia: „Stimmt, sorry.“',
+    choices: [ { text: "Weiter zu Level 3 (ALL CAPS)", delta: 0, next: "s3" } ]
+  },
+  { id: "s2b", lvl: 2,
+    bot: 'Mia: „War nicht so gemeint…“',
+    choices: [ { text: "Weiter zu Level 3 (ALL CAPS)", delta: 0, next: "s3" } ]
+  },
+
+  // Level 3 – ALL CAPS / !!!
+  { id: "s3",
+    lvl: 3,
+    bot: 'Leo schreibt: „DEIN REFERAT WAR EINFACH LANGWEILIG!!!“ – Formuliere eine höfliche Antwort.',
+    free: true,
+    hints: [
+      "Ich-Botschaft: „Ich verstehe… Mir hilft, wenn du sagst, welcher Teil unklar war.“",
+      "Nachfrage: „Was genau fandest du langweilig? Dann kann ich es verbessern.“",
+      "Ton: Keine ALL CAPS, Satzzeichen sparsam (max. ein !)."
+    ],
+    next: "s4"
+  },
+
+  // Level 4 – Emoji-Übertreibung
+  { id: "s4",
+    lvl: 4,
+    bot: 'Klassenchat: „Das Spiel war 🥇🔥🔥🔥!!! und dein Part war 😴😴😴…“ – Antworte fair & sachlich.',
+    free: true,
+    hints: [
+      "Sachlich bleiben: „Bitte beschreib, was genau nicht gepasst hat.“",
+      "Vorschlag: „Lass uns besprechen, wie wir meinen Teil verbessern.“",
+      "Emojis sparsam: maximal 1 sinnvoll eingesetztes Emoji."
+    ],
+    next: "s5"
+  },
+
+  // Level 5 – Deeskalation im Gruppenchat
+  { id: "s5",
+    lvl: 5,
+    bot: 'Zwei Mitschüler geraten aneinander. Einer ruft: „DU MACHST IMMER ALLES KAPUTT!!“ – Schreibe eine deeskalierende Einmischung.',
+    free: true,
+    hints: [
+      "Ich-Botschaft + Moderation: „Ich habe verstanden, dass es Frust gibt. Lasst uns kurz klären, was schief lief.“",
+      "Bitte um konkrete Beispiele statt „immer/nie“",
+      "Vorschlag: „Jeder sagt 1 Punkt ruhig, dann Lösung.“"
+    ],
+    next: "final"
+  },
+
+  // Finale
+  {
+    id: "final",
+    lvl: 5,
+    bot: 'Merksatz: Ich-Botschaften · Nachfragen · Emojis sparsam · Keine ALL CAPS/!!! · Deeskalation anbieten.',
+    choices: [
+      { text: "Nochmal von vorn (Level 1)", delta: 0, next: "s1" }
+    ]
+  }
+];
+
+// -------- Logik / UI --------
+let score = 0;
+let mistakes = {caps:0,punct:0,emoji:0,rude:0,du:0};
+const chat = document.getElementById('chat');
+const choices = document.getElementById('choices');
+const freeInput = document.getElementById('freeInput');
+const userText = document.getElementById('userText');
+const sendBtn = document.getElementById('send');
+const suggestBtn = document.getElementById('suggest');
+const scoreEl = document.getElementById('score');
+const resetBtn = document.getElementById('reset');
+const levelTags = document.getElementById('levelTags').querySelectorAll('.lvl');
+const summary = document.getElementById('summary');
+
+function setLevel(lvl){
+  levelTags.forEach(el=>{
+    el.classList.toggle('on', parseInt(el.dataset.lvl,10)===lvl);
+  });
+}
+
+function addBot(text){
+  const row = document.createElement('div'); row.className='row';
+  const bubble = document.createElement('div'); bubble.className='bot'; bubble.innerText = text;
+  row.appendChild(bubble); chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+}
+function addYou(text){
+  const row = document.createElement('div'); row.className='row'; row.style.justifyContent='flex-end';
+  const bubble = document.createElement('div'); bubble.className='you'; bubble.innerText = text;
+  row.appendChild(bubble); chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+}
+function setScore(delta){ score += delta; scoreEl.textContent = score; }
+
+function renderScene(id){
+  const scene = SCENES.find(s=>s.id===id);
+  if(!scene) return;
+  choices.innerHTML=''; freeInput.classList.add('hidden');
+  setLevel(scene.lvl||1);
+  addBot(scene.bot);
+
+  if(scene.free){
+    freeInput.classList.remove('hidden');
+    suggestBtn.onclick = ()=> showSuggestions(scene.hints||[]);
+    sendBtn.onclick = ()=> handleFreeInput(scene);
+  } else {
+    (scene.choices||[]).forEach(c=>{
+      const b = document.createElement('button'); b.className='btn'; b.textContent=c.text;
+      b.title = c.tip||'';
+      b.onclick = ()=>{
+        setScore(c.delta||0);
+        addYou(c.text);
+        renderScene(c.next);
+      };
+      choices.appendChild(b);
+    });
+  }
+  updateSummary();
+}
+
+function showSuggestions(hints){
+  addBot("Vorschläge:");
+  hints.forEach(h=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn ghost';
+    btn.textContent = h;
+    btn.onclick = ()=>{ userText.value = h; };
+    choices.appendChild(btn);
+  });
+}
+
+function analyzeMessage(msg){
+  const result = {delta:0, notes:[]};
+  const hasYelling = /[A-ZÄÖÜ]{4,}/.test(msg) && (msg === msg.toUpperCase() || /[A-ZÄÖÜ]{4,}/.test(msg));
+  const manyExclam = (msg.match(/!/g)||[]).length >= 3;
+  const manyQ = (msg.match(/\?/g)||[]).length >= 3;
+  const manyPunct = (msg.match(/[!?]{2,}/g)||[]).length >= 1;
+  const emoji = msg.match(/[\u{1F300}-\u{1FAFF}]/gu) || [];
+  const manyEmoji = emoji.length >= 3;
+  const rudeWords = /(dumm|blöd|halt die klappe|idiot|freak|opfer|nerv|hass)/i.test(msg);
+  const duUnterstellung = /\bdu\b.*(bist|machst|hast).*(immer|nie|falsch|schlecht|kaputt)/i.test(msg);
+
+  if(hasYelling){ result.delta -= 1; result.notes.push("BRÜLLEN (ALL CAPS) vermeiden."); mistakes.caps++; }
+  if(manyExclam||manyQ||manyPunct){ result.delta -= 1; result.notes.push("Zu viele Satzzeichen (!!!/???) vermeiden."); mistakes.punct++; }
+  if(manyEmoji){ result.delta -= 1; result.notes.push("Zu viele Emojis – lieber sparsam verwenden."); mistakes.emoji++; }
+  if(rudeWords){ result.delta -= 1; result.notes.push("Unhöfliche Wörter vermeiden."); mistakes.rude++; }
+  if(duUnterstellung){ result.delta -= 1; result.notes.push("DU-Unterstellungen vermeiden – nutze Ich-Botschaften."); mistakes.du++; }
+
+  // Positive cues
+  const ichBotschaft = /(ich\s*(finde|fühle|denke|verstehe|möchte|würde|kann|glaube))/i.test(msg);
+  const nachfragen = /(kannst du|könntest du|was genau|wie meinst du|magst du|würdest du|hilft mir|erkl\u00e4r)/i.test(msg);
+  const deeskalation = /(sorry|entschuldigung|lass uns|sachlich|ruhig|kein problem|kl\u00e4ren|l\u00f6sung)/i.test(msg);
+
+  if(ichBotschaft){ result.delta += 1; }
+  if(nachfragen){ result.delta += 1; }
+  if(deeskalation){ result.delta += 1; }
+
+  return result;
+}
+
+function handleFreeInput(scene){
+  const text = (userText.value||"").trim();
+  if(!text){ alert("Bitte schreibe eine kurze höfliche Antwort."); return; }
+  addYou(text);
+
+  const evaln = analyzeMessage(text);
+  setScore(evaln.delta);
+
+  if(evaln.notes.length){
+    addBot("Hinweis: " + evaln.notes.join(" "));
+  } else {
+    addBot("👍 Gute Netiquette! (Ich-Botschaft/Nachfragen/Deeskalation)");
+  }
+  renderScene(scene.next);
+  userText.value = "";
+}
+
+function updateSummary(){
+  summary.innerHTML = `
+    <b>Live-Auswertung (anonym):</b>
+    <div>ALL CAPS: ${mistakes.caps} · !!!/???: ${mistakes.punct} · Emoji-Flut: ${mistakes.emoji} · Unhöflich: ${mistakes.rude} · DU-Unterstellung: ${mistakes.du}</div>
+  `;
+}
+
+function resetGame(){
+  score = 0; scoreEl.textContent = "0";
+  mistakes = {caps:0,punct:0,emoji:0,rude:0,du:0};
+  chat.innerHTML = "";
+  renderScene('s1');
+}
+
+resetBtn.onclick = resetGame;
+resetGame();
+</script>
+</body>
+</html>
